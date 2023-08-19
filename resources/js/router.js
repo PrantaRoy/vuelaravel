@@ -5,7 +5,11 @@ import register from './pages/register.vue';
 import login from './pages/login.vue';
 import about from './pages/about.vue';
 import dashboard from './pages/dashboard.vue';
+import profile from './pages/profile.vue';
+import password from './pages/password.vue';
 import store from './store/index.js';
+
+import taskedit from './pages/taskedit.vue';
 
 const routes = [
      {
@@ -41,6 +45,28 @@ const routes = [
           meta:{
                requiresAuth:true
           }
+     },
+     {
+          path:'/profile',
+          name : 'Profile',
+          component : profile,
+          meta:{
+               requiresAuth:true
+          }
+     },
+     {
+          path:'/password',
+          name : 'Password',
+          component : password,
+          meta:{
+               requiresAuth:true
+          }
+     },
+     {
+          path:'/edit-task',
+          name : 'EditTask',
+          component : taskedit,
+         
      }
 ];
 

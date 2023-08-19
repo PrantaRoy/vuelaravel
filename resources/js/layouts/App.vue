@@ -27,11 +27,11 @@
         </li>
         
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Dropdown</a>
+          <a class="nav-link dropdown-toggle" v-if="$store.getters.getToken != 0"  href="#" role="button" data-bs-toggle="dropdown">{{ name }}</a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Link</a></li>
-            <li><a class="dropdown-item" href="#">Another link</a></li>
-            <li><a class="dropdown-item" href="#">A third link</a></li>
+            <li><router-link :to="{name: 'Profile'}" class="dropdown-item" v-if="$store.getters.getToken != 0"  href="#">Profile</router-link></li>
+            <li><router-link :to="{name: 'Password'}" class="dropdown-item" v-if="$store.getters.getToken != 0"  href="#">Password</router-link></li>
+            <li><button @click="logout" class="dropdown-item" href="#">Logout</button></li>
           </ul>
         </li>
       </ul>
@@ -43,3 +43,45 @@
 <router-view></router-view>
 
 </template>
+<script>
+import {reactive ,ref} from 'vue';
+import {useRouter} from 'vue-router';
+import {useStore} from 'vuex'
+export default{
+  data(){
+          return {
+          name: ''
+          }
+     },
+     setup(){
+
+         let errors = ref([]) ;
+         const router = useRouter();
+         const store = useStore();
+         const logout = async()=>{
+          console.log('OKKKKK');
+          await axios.post('/api/logout').then(res=>{
+               if(res.data.success){
+                  store.dispatch('removeToken');
+                  router.push({name:'Login'});
+                    toast(res.data.message, {
+                         autoClose: 1000,
+                    });
+               }
+          }).catch(e => {
+               errors.value = e.response.data.message ;
+               
+          });
+         }
+         return{
+               logout,
+               errors
+         }
+     },
+     mounted() {
+        window.axios.get('/api/user').then(res => {
+            this.name = res.data.name
+        })
+    }
+}
+</script>

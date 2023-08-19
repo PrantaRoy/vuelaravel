@@ -5,7 +5,9 @@
  */
 
 import axios from 'axios';
+// import toastre from 'vue-toastification';
 window.axios = axios;
+// window.toastre = require('toastr');
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 

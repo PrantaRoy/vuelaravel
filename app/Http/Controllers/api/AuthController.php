@@ -34,6 +34,8 @@ class AuthController extends Controller
         $success['token'] = $user->createToken('App')->plainTextToken;
         $success['name'] = $user->name;
 
+        Auth::login($user);
+
         $response = [
             'success' => true,
             'data' => $success,
@@ -81,5 +83,73 @@ class AuthController extends Controller
             ];
             return response()->json($response);
         }
+    }
+
+    public function updateProfile(Request $req){
+        $input = $req->all();
+        $validate = Validator::make($input,[
+            'email' => 'required|email',
+            'phone' => 'required',
+            'name' => 'required',
+        ]);
+
+        if($validate->fails()){
+            $response = [
+                'success' => false,
+                'data' => 'Validation Error',
+                'message' => $validate->errors()
+            ];
+
+            return response()->json($response,400);
+        }
+
+        $user = Auth::user();
+        $user->name = $req->name;
+        $user->email = $req->email;
+        $user->phone = $req->phone;
+        $user->update();
+        $response = [
+            'success' => true,
+            'data' =>  $user,
+            'message' => 'Update Successfull'
+        ];
+        return response()->json($response,200);
+    }
+
+    public function updatePassword(Request $req){
+        $input = $req->all();
+        $validate = Validator::make($input,[
+            'password' => 'required',
+            'new_password' => 'required',
+            'confirm_password' => 'required|same:new_password',
+        ]);
+
+        if($validate->fails()){
+            $response = [
+                'success' => false,
+                'message' => $validate->errors()
+            ];
+            return response()->json($response,400);
+        }
+
+        $user = Auth::user();
+        $user->password =  bcrypt($input['new_password']) ;
+        $user->save();
+        $response = [
+            'success' => true,
+            'data' =>  $user,
+            'message' => 'Password Update Successfull'
+        ];
+        return response()->json($response,200);
+    }
+
+    public function logout(){
+       Auth::logout();
+        $response = [
+            'success' => true,
+            'data' =>  'Logout',
+            'message' => 'Logout Successfull'
+        ];
+        return response()->json($response,200);
     }
 }
